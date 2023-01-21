@@ -11,7 +11,7 @@ from dateutil import parser
 theme_plotly = None
 
 st.set_page_config(page_title='Osmosis - Analysis on Wallet Balances', page_icon= 'Images/osmo-logo.png', layout='wide')
-st.title('Osmosis - Analysis on Wallet Balances')
+st.title('The Impact of Liquidity/Staked Wallet Balances on OSMO')
 
 st.image(Image.open('Images/OSMO-blockchain.png'))
 
@@ -55,7 +55,15 @@ st.write(
 )
 
 st.header("Methodology")
-with st.expander("Method details and data sources"):
+c1,c2,c3 = st.columns([1,1,1])
+with c1:
+    st.info('**[My Tweet](https://twitter.com/ZazuCoco/status/1616543954497048576)**', icon="📄")
+with c2:
+    st.info('**[GitHub Repository](https://github.com/zazu9249/osmo-lping-staking-balances)**', icon="💻")
+with c3:
+    st.info('**[Queries Collection](https://app.flipsidecrypto.com/velocity/collections/558df0ca-470c-4f70-9554-f3f797ed15d7)**', icon="❓")    
+
+with st.expander("**Method details and data sources**"):
     st.write(
         """
         There is a Balances table launched under Osmosis → _osmosis.core.fact_daily_balances_ In the table, we have 4 balance types:
@@ -79,7 +87,7 @@ with st.expander("Method details and data sources"):
         (https://flipsidecrypto.xyz) data platform using its REST API. These queries are run every 
         12 hours to include the latest data, and the JSON file is imported directly into each visualization.
         This tool's source code is available in the 
-        [**GitHub Repository**](https://github.com/zazu9249/near-mega-dashboard).
+        [**GitHub Repository**](https://github.com/zazu9249/osmo-lping-staking-balances).
 
         Here are the queries for all the visualizations: 
         [**Flipside Collection**](https://app.flipsidecrypto.com/velocity/collections/558df0ca-470c-4f70-9554-f3f797ed15d7) 
@@ -107,6 +115,19 @@ with tab2:
     fig.update_layout(legend_title=None, xaxis_title='Day', yaxis_title='Active Wallets')
     st.plotly_chart(fig, use_container_width=True, theme=theme_plotly)
 
+    st.write(
+        """
+        From the above graphs, we can clearly say that:
+
+        - The Total Number of Active Wallets **Providing Liquidity** balance are **519k** and the Total Number of Active Wallets who **Locked their Liquidity** are **151.5k**.
+
+        - Upto December 13th, 2021, the wallets has the option only to lock the liquidity and we can see that the locked liquidity is almost same upto December 13th. From December 14th, 2021, wallets started to provide liquidity and we see the constant growth in all the three balance types 
+        from there.  
+
+        - Currently, the trends are around 142k wallets for locked liquidity, 461k wallets for liquidity.
+        """
+    )
+
     balance = pd.read_json('https://node-api.flipsidecrypto.com/api/v2/queries/58bc9b5d-c1fe-491b-840d-078b17e92dae/data/latest')
     df = balance.query("(BALANCE_TYPE=='liquid')")
     st.metric(label='**Total Liquidity Balance (in $)**', value=str(df['BALANCE_USD'].values[0]))
@@ -116,6 +137,16 @@ with tab2:
     fig = px.area(df, title='Total Balance of Liquidity over Time (in USD)', x=df['DAY'], y=df['BALANCE_USD'])
     fig.update_layout(legend_title=None, xaxis_title='Day', yaxis_title='Balance (in $)')
     st.plotly_chart(fig, use_container_width=True, theme=theme_plotly)
+
+    st.write(
+        """
+        - **The Total Liquidity Balance of all the Wallets is $672B**
+
+        - From the Area chart we can see that the Wallets LPing more upto March first week and then there is slow declined growth. But on May 13th, we see a sudden spike of \$5.6B Liquidity Balance and suddenly fall to \$750M on the next day.
+
+        - From May the Liquidity balance is continuing in normal trend in between \$400M and \$1B
+        """
+    )
 
     c1, c2 = st.columns([1,1])
     with c1:
@@ -128,6 +159,14 @@ with tab2:
         fig = px.pie(top_wallets, values='BALANCE', names='ADDRESS', title='Top Wallets with high Locked Liquidity Balance (in USD)')
         fig.update_layout(showlegend= True)
         st.plotly_chart(fig, use_container_width=True, theme=theme_plotly)
+
+    st.write(
+        """
+        From the above pie charts, we can conclude that:
+        
+        The Wallet **osmo1vqy8rqqlydj9wkcyvct9zxl3hc4eqgu3d7hd9k** has the highest Liquid Balance of 42.2% and the Wallet **osmo1gutazlwa3ypregqdyp74fn4hm42dtymwg638dg** has locked the highest Liquid Balance of 57.3% of Top 10 Wallets. 
+        """
+    )
 
 with tab1:
     active_wallets = pd.read_json('https://node-api.flipsidecrypto.com/api/v2/queries/f5eca31b-1f20-4907-b41d-e4638df6c916/data/latest')
@@ -143,6 +182,18 @@ with tab1:
     fig.update_layout(legend_title=None, xaxis_title='Day', yaxis_title='Active Wallets')
     st.plotly_chart(fig, use_container_width=True, theme=theme_plotly)
 
+    st.write(
+        """
+        From the above graphs, we can clearly say that:
+
+        - The Total Number of **Active Wallets Staking** are **274k** and the Total Number of Active Wallets who are doing **Superfluid Staking** are **100k**.
+
+        - Upto December 13th, 2021, the wallets has the option only to stake the OSMO and we can see that the staked amount is almost same upto December 13th. The Superfluid Staking started from February 28th, 2022.  
+
+        - Currently, the trends are around 231k wallets for staked and 70.5k wallets for superfluid staking.
+        """
+    )
+
     balance = pd.read_json('https://node-api.flipsidecrypto.com/api/v2/queries/58bc9b5d-c1fe-491b-840d-078b17e92dae/data/latest')
     df = balance.query("(BALANCE_TYPE=='staked')")
     st.metric(label='**Total Staked Balance (in $)**', value=str(df['BALANCE_USD'].values[0]))
@@ -152,6 +203,16 @@ with tab1:
     fig = px.area(df, title='Total Balance of Staked Tokens over Time (in USD)', x=df['DAY'], y=df['BALANCE_USD'])
     fig.update_layout(legend_title=None, xaxis_title='Day', yaxis_title='Balance (in $)')
     st.plotly_chart(fig, use_container_width=True, theme=theme_plotly)
+
+    st.write(
+        """
+        - **The Total Staked Balance of all the Wallets is $173B**
+
+        - From the Area chart we can see that the Wallets Staking more upto March first week and then there is deep valley upto May 14th, 2022 to $146M.
+
+        - From May 15th, 2022, the Staked balance is continuing in normal trend in between \$150M and \$250M
+        """
+    )
 
     c1, c2 = st.columns([1,1])
     with c1:
@@ -165,11 +226,24 @@ with tab1:
         fig = px.pie(top_wallets_superfluid, values='BALANCE', names='ADDRESS', title='Top Wallets with high Superfluid Staked Balance (in USD)')
         fig.update_layout(showlegend= True)
         st.plotly_chart(fig, use_container_width=True, theme=theme_plotly)
+    
+    st.write(
+        """
+        From the above pie charts, we can conclude that:
+        
+        The Wallet **osmo1pvxhtre74l37p6y2rs2e8xyek75z7xlc7g2trt** has the highest Staked Balance of 37.5% and the Wallat **osmo1nt8xs0r0r6q64amrs75k0ew93493k3ys5pdf7s** has the highest Superfluid Staked Balance of 21.6% of Top 10 Wallets.
+        """
+    )
 
 st.header('How the token OSMO affected?')
 st.write(
     """
     _Below are some metrics to get the insights on the **OSMO Token changes with the help of Wallet Balances**_
+
+    Let's look into the 
+    - Liquidity Balance & Staked Balance of OSMO Tokens
+    - Average OSMO per Wallet and its comparison with the Wallets Growth
+    - Average Balance of LPing/Staking OSMO Token compared with the Other Tokens
     """
 )
 
@@ -205,6 +279,21 @@ fig = px.area(holding_osmo_other, title='Average Balance of Lping/Staking OSMO v
 fig.update_layout(legend_title=None, xaxis_title='Day', yaxis_title='Balance (in $)')
 st.plotly_chart(fig, use_container_width=True, theme=theme_plotly)
 
+st.write(
+    """
+    From all the above graphs, we can summarize the OSMO variation as 
+    - The Total OSMO Liquidity Balance is very high (which is 76%) compared to the Total Staked OSMO (24%).
+    - The Staking of OSMO started on October 2021 and we see a vary high peak of \$8.6B on October 3rd, 2021 and decreases to \$230M on October 5th. 
+    - From Octobter 5th, we see the constant increase of Staked OSMO Balance to March first week upto \$1B and then the valley starts. From June 2022, it is trending around \$200M.
+    - The Liquidity of OSMO started on December 2021 and see very high growth of Liquid OSMO Balance upto March first week to \$4.3B and then falls to \$316M in step wise upto Mid-June.
+    - From July 2022, the Liquid OSMO Balance is trending around \$500M to \$800M.  
+
+    - Total Number of Wallets holding OSMO Balance are 451k with Total OSMO Balance (both Liquid and Staked) as \$726M.
+    - The Average OSMO per Wallet can be calculated as \$1609.
+
+    """
+)
+
 st.subheader('Top Tokens Lping/Staking by most Wallets and with the most Balances')
 c1, c2 = st.columns([1,1])
 with c1:
@@ -231,4 +320,37 @@ with c2:
     fig.update_layout(showlegend= True)
     st.plotly_chart(fig, use_container_width=True, theme=theme_plotly)
 
+st.header('Conclusion')
+st.write(
+    """
+    The OSMO token was released with an initial supply of 100 million tokens, which was allocated evenly between airdrops to ATOM holders and a strategic reserve.
+
+    According to the _**Osmosis Blog**_:
+
+    “In the first year, there will be a total of 300 million tokens released. After 365 days, this will be cut by a third, and thus there will be a total of 
+    200 million tokens released in year two. In year three there will be a total of 133 million tokens released. And so on. This thirdening process will allow OSMO to 
+    reach an asymptotic maximum supply of one billion.” 
+
+    New tokens are distributed as follows:
+
+    - 25% to rewards for staking
+    - 25% to vesting for developers
+    - 45% for liquidity mining incentives
+    - 5% to the community pool
+
+    The OSMO token is the main governance token of the Osmosis Protocol as well as the native currency of the Osmosis blockchain. Osmosis is a proof of stake blockchain, 
+    which means validator nodes must have a certain amount of OSMO staked to confirm transaction blocks. 
+
+    Right now different liquidity pools on Osmosis generate anywhere from 30% to 100% or more as LP rewards per annum. These rates will see a significant drop after the thirdening. By how much is yet to be seen.
+
+    Osmosis also gives about 54% per annum as staking rewards and this will go down after the thirdening.
+
+    The **Superfluid Staking** unlocks two different APRs for LPs comes in–enabling smaller zones to attract investors with high yields, without compromising on security. The
+     new feature will incentivize the increased health of the $70 billion Cosmos ecosystem by securing smaller zones whose tokens are listed on Osmosis, while providing those chains with liquidity.
+
+    Osmosis has rapidly grown since it launched in June 2021 but we see a declined growth of price in bear market. But since one week, we again see a good price trend of OSMO.
+    """
+
+    
+)
 
